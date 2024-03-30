@@ -1,8 +1,19 @@
 import classes
 User=classes.User
-Product = classes.Product
-ProductRegistry=classes.ProductRegistry
-product=Product("Laptop", 100, 900)
+UserRegistry=classes.UserRegistry
+user=User("Vasile")
+user1=User("Ion")
+user2=User("Maria")
+user3=User("Grigore")
+userRegistry=UserRegistry.getInstance()
+userRegistry.addUser(user)
+userRegistry.addUser(user1)
+userRegistry.addUser(user2)
+userRegistry.addUser(user3)
+userRegistry.displayUsers()
+
+
+
 # product1=Product("Phone", 200, 900)
 # product2=Product("Tablet", 300, 900)
 # productRegistry =ProductRegistry.getInstance()
