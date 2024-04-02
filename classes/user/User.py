@@ -5,11 +5,11 @@ class User:
     def __init__(self, name):
         self.__name = name
         self.__products=ProductRegistry()
-    def get_name(self):
+    def getName(self):
         return self.__name
-    def set_name(self, name):
+    def setName(self, name):
         self.__name = name
-    def add_product(self, product):
+    def addProduct(self, product):
         self.__products.addProduct(product)
     def __str__(self):
         return f"User name {self.__name}"

@@ -7,19 +7,19 @@ class Product:
         self.__finalPrice = startingPrice
     
 
-    def get_finalPrice(self):
+    def getFinalPrice(self):
         return self.__finalPrice
-    def set_finalPrice(self, finalPrice):
+    def setFinalPrice(self, finalPrice):
         self.__finalPrice = finalPrice
 
-    def get_startingPrice(self):
+    def getStartingPrice(self):
         return self.__startingPrice
-    def set_startingPrice(self, startingPrice):
+    def setStartingPrice(self, startingPrice):
         self.__startingPrice = startingPrice
 
-    def get_name(self):
+    def getName(self):
         return self.__name
-    def set_name(self, name):
+    def setName(self, name):
         self.__name = name   
     def __str__(self):
         return f"Name: {self.__name} Starting Price:  {str(self.__startingPrice)} Final Price: {str(self.__finalPrice)}"
