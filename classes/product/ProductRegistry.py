@@ -15,8 +15,8 @@ class ProductRegistry:
     def getProducts(self):
         return self.__products
     def addProduct(self,product):
-        if product.get_name() not in self.__products:
-            self.__products[product.get_name()] = product
+        if product.getName() not in self.__products:
+            self.__products[product.getName()] = product
     
            
    
