@@ -1,10 +1,10 @@
 
 class Product:
     
-    def __init__(self, name, startingPrice,finalPrice):
+    def __init__(self, name, startingPrice):
         self.__name = name
         self.__startingPrice = startingPrice
-        self.__finalPrice = finalPrice
+        self.__finalPrice = startingPrice
     
 
     def get_finalPrice(self):
