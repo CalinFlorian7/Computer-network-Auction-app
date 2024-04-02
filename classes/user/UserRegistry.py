@@ -20,6 +20,27 @@ class UserRegistry:
             return True
         else:
             return False
+    def addProductForUser(self,userName,product):
+        if userName in self.__users:
+            self.__users[userName].addProduct(product)
+        else:
+            print(f"User {userName} does not exist")
+    def updateProductFinalPrice(self,productName,updatedPrice):
+        for userName in self.__users:
+            userCurent=self.__users[userName]
+            products=userCurent.getProducts()
+    
+            if productName in products:
+                if (products[productName].getStartingPrice())>= updatedPrice:
+                    print(f"Price {updatedPrice} is lower than the starting price {products[productName].getStartingPrice()}")
+                elif (products[productName].getFinalPrice())>= updatedPrice:
+                    print(f"Price {updatedPrice} is lower than the final price {products[productName].getFinalPrice()}")
+                else:
+
+                     products[productName].setFinalPrice(updatedPrice)
+            else:
+                print(f"Product {productName} does not exist for user {userName}")
+            
     def displayUsers(self):
         print("Users already added:")
         for userName in self.__users:
