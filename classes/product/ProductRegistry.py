@@ -2,16 +2,16 @@
 
 class ProductRegistry:
     __products = {}
-    _instance=None
+    # _instance=None
     
     def __init__(self):
         self.__products = {}
-    @staticmethod
-    def getInstance():
-        if ProductRegistry._instance==None:
-            ProductRegistry._instance=ProductRegistry()
+    # @staticmethod
+    # def getInstance():
+    #     if ProductRegistry._instance==None:
+    #         ProductRegistry._instance=ProductRegistry()
             
-        return ProductRegistry._instance
+    #     return ProductRegistry._instance
     def getProducts(self):
         return self.__products
     def addProduct(self,product):
