@@ -1,16 +1,30 @@
 import classes
 User=classes.User
+Product=classes.Product
 UserRegistry=classes.UserRegistry
+product=Product("Phone", 200, 900)
+product1=Product("chair", 100, 200)
 user=User("Vasile")
 user1=User("Ion")
 user2=User("Maria")
 user3=User("Grigore")
-userRegistry=UserRegistry.getInstance()
+user.add_product(product)
+user.add_product(product1)
+user1.add_product(product)
+user2.add_product(product)
+user3.add_product(product)
+userRegistry=UserRegistry()
 userRegistry.addUser(user)
 userRegistry.addUser(user1)
 userRegistry.addUser(user2)
 userRegistry.addUser(user3)
-userRegistry.displayUsers()
+# userRegistry.addUserProduct("Vasile",product)
+user.displayUserProducts()
+user1.displayUserProducts()
+user2.displayUserProducts()
+user3.displayUserProducts()
+# userRegistry.displayUsers()
+
 
 
 

@@ -4,7 +4,7 @@ from classes.product.ProductRegistry import ProductRegistry
 class User:
     def __init__(self, name):
         self.__name = name
-        self.__products=ProductRegistry.getInstance()
+        self.__products=ProductRegistry()
     def get_name(self):
         return self.__name
     def set_name(self, name):
@@ -13,6 +13,8 @@ class User:
         self.__products.addProduct(product)
     def __str__(self):
         return f"User name {self.__name}"
+    def getProducts(self):
+        return self.__products.getProducts()
     def displayUserProducts(self):
         print(f"User {self.__name} has the following products:")
         products=self.__products.getProducts()
