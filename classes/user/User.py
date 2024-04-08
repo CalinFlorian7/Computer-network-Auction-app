@@ -10,7 +10,9 @@ class User:
     def setName(self, name):
         self.__name = name
     def addProduct(self, product):
-        self.__products.addProduct(product)
+        error=self.__products.addProduct(product)
+        if error is not None:
+            return error
     def __str__(self):
         return f"User name {self.__name}"
     def getProducts(self):

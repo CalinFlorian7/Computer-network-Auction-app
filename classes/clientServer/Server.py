@@ -74,7 +74,7 @@ class Server:
                             self.sendResponse("The product was added",client_socket)
                             print("The product was added")
                             self.users.displayUsers()
-                       else:
+                       elif response=="error":
                                self.sendResponse("error",client_socket) 
                     elif endpoint==Endpoint.GETPRODUCTS.value:
                         products=self.users.getProductsForUser(self.connectedUsers[client_socket.getpeername()[1]])

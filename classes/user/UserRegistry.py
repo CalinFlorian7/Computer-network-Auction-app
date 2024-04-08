@@ -22,7 +22,9 @@ class UserRegistry:
             return False
     def addProductForUser(self,userName,product):
         if userName in self.__users:
-            self.__users[userName].addProduct(product)
+           error= self.__users[userName].addProduct(product)
+           if error is not None:
+                return error
         else:
             print(f"User {userName} does not exist")
             

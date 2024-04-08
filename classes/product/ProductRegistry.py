@@ -24,7 +24,7 @@ class ProductRegistry:
         if product.getName() not in self.__products:
             self.__products[product.getName()] = product
         else:
-            return "This product already exists"
+            return "error"
     def serialize(self):
         products={}
         for productName in self.__products.keys():
