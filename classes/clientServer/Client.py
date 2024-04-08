@@ -1,7 +1,9 @@
 import socket
 import threading
 from classes.product.Product import Product
+from classes.product.ProductRegistry import ProductRegistry
 import json
+from classes.endpoint.Endpoint import Endpoint
 class Client:
     def __init__(self, server_ip, server_port):
         self.server_ip = server_ip
@@ -86,6 +88,32 @@ class Client:
                 else:
                     print(response)
                     break
+        except socket.error as e:
+            print("Failed to send data:", str(e))
+    def startAuction(self,endpoint):
+        try:
+            self.getProducts()
+        except socket.error as e:
+            print("Failed to send data:", str(e))
+    def getProducts(self):
+        try:
+            jsonData={"endpoint":Endpoint.GETPRODUCTS.value}
+            jsonData=json.dumps(jsonData)
+            self.client_socket.sendall(jsonData.encode())
+            print("request to recieve products send!")
+            response=self.receive_data()
+            print("Your products: \n")
+            if(response=="error"):
+                self.displayError("No products available! Please add a product first!")
+            else:
+                response=json.loads(response)
+                print("Your products:")
+            # for key,prouct in response.items():
+            #     print("Product name: "+prouct["name"]+" Starting price: "+prouct["startingPrice"]) 
+                products=ProductRegistry.deserialize(response)
+                for index,product in products.items():
+                    print(" Product name: "+product.getName()+" ,Starting price: "+str(product.getStartingPrice()))
+        
         except socket.error as e:
             print("Failed to send data:", str(e))
     def isNumber(self,value):
