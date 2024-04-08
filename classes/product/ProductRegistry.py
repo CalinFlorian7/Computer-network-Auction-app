@@ -17,6 +17,8 @@ class ProductRegistry:
     def addProduct(self,product):
         if product.getName() not in self.__products:
             self.__products[product.getName()] = product
+        else:
+            return "This product already exists"
     
            
    
