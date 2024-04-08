@@ -14,7 +14,7 @@ class User:
     def __str__(self):
         return f"User name {self.__name}"
     def getProducts(self):
-        return self.__products.getProducts()
+        return self.__products.getSerializedProducts()
     def displayUserProducts(self):
         print(f"User {self.__name} has the following products:")
         products=self.__products.getProducts()

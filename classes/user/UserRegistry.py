@@ -42,7 +42,12 @@ class UserRegistry:
                     else:
                         return f"Product {productName} does not exist for user {userName}"
                 else:
-                    return f"User {userName} does not exist"  
+                    return f"User {userName} does not exist" 
+    def getProductsForUser(self, userName):
+        if userName in self.__users:
+            userCurrent = self.__users[userName]
+            return userCurrent.getProducts()
+            return f"User {userName} does not exist" 
     def displayUsers(self):
         print("Users already added:")
         for userName in self.__users:

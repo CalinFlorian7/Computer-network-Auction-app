@@ -11,12 +11,19 @@ client.insertUser(Endpoint.INSERTUSER.value)
 print("you name for this auction: "+userName)
 
 while True:
+    print("----------------------------------------------------------------------")
     print("Write am option from below to continue:")
     print("1. Add product")
-    print("2. Start auction")
+    print("2. Start an auction")
+    print("3. Get products")
     chosenOption=input("Your choise option: ")
     if(chosenOption=="1"):
         client.insertProduct(Endpoint.INSERTPRODUCT.value)
+    if(chosenOption=="2"):
+        client.startAuction(Endpoint.STARTAUCTION.value)
+   
+    
+        
 
 
 # while True:
