@@ -2,6 +2,7 @@ import socket
 import json
 import threading
 from classes import UserRegistry
+from classes.product.ProductRegistry import ProductRegistry
 from classes.endpoint.Endpoint import Endpoint
 from classes.user.User import User
 from classes.product.Product import Product
@@ -74,7 +75,19 @@ class Server:
                             print("The product was added")
                             self.users.displayUsers()
                        else:
-                               self.sendResponse("error",client_socket)     
+                               self.sendResponse("error",client_socket) 
+                    elif endpoint==Endpoint.GETPRODUCTS.value:
+                        products=self.users.getProductsForUser(self.connectedUsers[client_socket.getpeername()[1]])
+                        if(products.__len__()==0):
+                            self.sendResponse("error",client_socket)
+                            print("No products available!")
+                        else:
+                            # products=products.serialize()
+                            products=json.dumps(products)
+                            print(products.__str__())
+                            self.sendResponse(products,client_socket)
+
+
 
 
                 else:
