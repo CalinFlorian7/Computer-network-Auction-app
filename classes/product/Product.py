@@ -28,4 +28,6 @@ class Product:
         self.__name = name   
     def __str__(self):
         return f"Name: {self.__name} Starting Price:  {str(self.__startingPrice)} Final Price: {str(self.__finalPrice)}"
+    def displayProductNameAndStartingPrice(self):
+        print(f"Name: {self.__name}, Starting Price:  {str(self.__startingPrice)}")
     
