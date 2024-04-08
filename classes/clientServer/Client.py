@@ -92,7 +92,22 @@ class Client:
             print("Failed to send data:", str(e))
     def startAuction(self,endpoint):
         try:
-            self.getProducts()
+            products=self.getProducts()
+            print("Your products:")
+            for index,product in products.items():
+                print(" Product name: "+product.getName()+" ,Starting price: "+str(product.getStartingPrice()))
+            productName=input("To start an auction, please enter the name of the product: ")
+            while True:
+                if productName not in products:
+                    print("The product does not exist, please enter a valid product name!")
+                    productName=input("To start an auction, please enter the name of the product: ")
+                else:
+                    break
+
+
+
+            
+            
         except socket.error as e:
             print("Failed to send data:", str(e))
     def getProducts(self):
@@ -102,17 +117,14 @@ class Client:
             self.client_socket.sendall(jsonData.encode())
             print("request to recieve products send!")
             response=self.receive_data()
-            print("Your products: \n")
+          
             if(response=="error"):
                 self.displayError("No products available! Please add a product first!")
             else:
                 response=json.loads(response)
-                print("Your products:")
-            # for key,prouct in response.items():
-            #     print("Product name: "+prouct["name"]+" Starting price: "+prouct["startingPrice"]) 
                 products=ProductRegistry.deserialize(response)
-                for index,product in products.items():
-                    print(" Product name: "+product.getName()+" ,Starting price: "+str(product.getStartingPrice()))
+                
+                return products
         
         except socket.error as e:
             print("Failed to send data:", str(e))
