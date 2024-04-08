@@ -1,8 +1,10 @@
 import socket
+import json
 import threading
 from classes import UserRegistry
 from classes.endpoint.Endpoint import Endpoint
 from classes.user.User import User
+from classes.product.Product import Product
 # from classes.endpoint import Endpoint
 
 
@@ -14,6 +16,7 @@ class Server:
         self.connections = []
         self.lock = threading.Lock()
         self.users=UserRegistry()
+        self.connectedUsers={}
 
     def start(self):
         self.server_socket.bind((self.host, self.port))
@@ -29,19 +32,28 @@ class Server:
     def handle_client(self, client_socket):
         with self.lock:
             self.connections.append(client_socket)
+            
 
         while True:
             try:
+                # print("client socket: " + client_socket.__str__())
+                # print("client remote adress",client_socket.getpeername()[1])
                 message = client_socket.recv(1024).decode()
-                if message:
-                    endpoint,data=message.split("\n")
-                    print(f"Recieved endpoint: {endpoint}")
+                message=json.loads(message)
+                print("Received message: ",message)
+                if message!=None:
+                    # endpoint,data=message.split("\n")
+                    
+                    endpoint=message["endpoint"]
+                   
+                    # print(f"Recieved endpoint: {endpoint}")
                 
-                    print(f"Recieved userName: {data}")
+                    # print(f"Recieved userName: {data}")
                     # self.broadcast("salut din partea serverului pt toti", client_socket)
                     
                     # self.sendResponse("salut din partea serverului",client_socket)
                     if endpoint==Endpoint.INSERTUSER.value:
+                        data=message["userName"]
                         if self.users.userNameExists(data):
                             self.sendResponse("error",client_socket)
                             print("the user already exists")
@@ -49,7 +61,22 @@ class Server:
                             user=User(data)
                             self.users.addUser(user)
                             self.sendResponse("The registration was succesful",client_socket)
+                            self.connectedUsers[client_socket.getpeername()[1]]=user.getName()
+                            # for user in self.connectedUsers:
+                            #     print("Connected users: "+self.connectedUsers[user])
                             print("The registration  succesful")
+                    elif endpoint==Endpoint.INSERTPRODUCT.value:
+                       product=message["product"]
+                       product=Product.deserialize(product)
+                       response= self.users.addProductForUser(self.connectedUsers[client_socket.getpeername()[1]],product)
+                       if response==None:
+                            self.sendResponse("The product was added",client_socket)
+                            print("The product was added")
+                            self.users.displayUsers()
+                       else:
+                               self.sendResponse("error",client_socket)     
+
+
                 else:
                     with self.lock:
                         self.connections.remove(client_socket)
