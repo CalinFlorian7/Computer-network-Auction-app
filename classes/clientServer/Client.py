@@ -1,5 +1,7 @@
 import socket
 import threading
+from classes.product.Product import Product
+import json
 class Client:
     def __init__(self, server_ip, server_port):
         self.server_ip = server_ip
@@ -35,22 +37,63 @@ class Client:
                 if userName=="":
                     print("Please enter a valid name!")
                 else:
+                    json_data={"endpoint":endpoint,"userName":userName}
+                    # self.client_socket.sendall((endpoint+"\n"+userName).encode())
                     
-                    self.client_socket.sendall((endpoint+"\n"+userName).encode())
+                    self.client_socket.sendall(json.dumps(json_data).encode())
                     print("Data sent successfully to the server!")
                     response=self.receive_data()
                     if(response=="error"):
-                        print("The user already exists, please enter another name:")
+                        self.displayError("This name is already taken, please enter another name:")
                     else:
                         print(response)
                         break
+    
 
             
             
            
         except socket.error as e:
             print("Failed to send data:", str(e))
-
+    def insertProduct(self, endpoint):
+        try:
+            
+            while True:
+                productName =""
+                startingPrice=""
+                while True:
+                    productName=input("Please enter the name for the product: ")
+                    if productName=="":
+                        print("Please enter a valid product name!")
+                    else:
+                        break
+                while True:
+                    startingPrice=input("Please enter the starting price for the product: ")
+                    if startingPrice=="" or self.isNumber(startingPrice)==False:
+                        print("Please enter a valid prouct price!")
+                    else:
+                        break
+                
+                product=Product(productName,startingPrice) 
+                product=product.serialize()   
+                jsonData={"endpoint":endpoint, "product":product}
+                jsonData=json.dumps(jsonData)
+                self.client_socket.sendall(jsonData.encode())
+                print("Data sent successfully to the server!")
+                response=self.receive_data()
+                if(response=="error"):
+                    print("The product already exists, please enter another product name:")
+                else:
+                    print(response)
+                    break
+        except socket.error as e:
+            print("Failed to send data:", str(e))
+    def isNumber(self,value):
+        try:
+            val=float(value)
+            return True
+        except ValueError:
+            return False
     def receive_data(self):
         try:
             data = self.client_socket.recv(1024).decode()
@@ -58,7 +101,10 @@ class Client:
             return data
         except socket.error as e:
             print("Failed to receive data:", str(e))
-
+    def displayError(self,error):
+        print("\n--------------------------------------------------------\n")
+        print(error)
+        print("\n--------------------------------------------------------")
     def close(self):
         self.client_socket.close()
         print("Connection closed.")
