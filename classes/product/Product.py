@@ -16,6 +16,11 @@ class Product:
         return self.__startingPrice
     def setStartingPrice(self, startingPrice):
         self.__startingPrice = startingPrice
+    def serialize(self):
+        return {"name":self.__name,"startingPrice":self.__startingPrice,"finalPrice":self.__finalPrice}
+    @staticmethod
+    def deserialize(data):
+        return Product(data["name"],data["startingPrice"])
 
     def getName(self):
         return self.__name
