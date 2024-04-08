@@ -6,3 +6,4 @@ from .clientServer.Client import Client
 from .clientServer.Server import Server
 from .auction.Auction import Auction
 from .endpoint.Endpoint import Endpoint
+from .options.Options import Options
