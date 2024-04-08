@@ -1,5 +1,5 @@
 
-
+from classes.product.Product import Product
 class ProductRegistry:
     __products = {}
     # _instance=None
@@ -14,11 +14,29 @@ class ProductRegistry:
     #     return ProductRegistry._instance
     def getProducts(self):
         return self.__products
+    def getSerializedProducts(self):
+        products={}
+        for productName in self.__products.keys():
+            product=self.__products[productName]
+            products[productName]=product.serialize()
+        return products
     def addProduct(self,product):
         if product.getName() not in self.__products:
             self.__products[product.getName()] = product
         else:
             return "This product already exists"
+    def serialize(self):
+        products={}
+        for productName in self.__products.keys():
+            product=self.__products[productName]
+            products[productName]=product.serialize()
+    @staticmethod
+    def deserialize(data):
+        products={}
+        for productName in data.keys():
+            product=Product.deserialize(data[productName])
+            products[productName]=product
+        return products
     
            
    
