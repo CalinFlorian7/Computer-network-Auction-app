@@ -20,11 +20,19 @@ class Client:
             print("Data sent successfully!")
         except socket.error as e:
             print("Failed to send data:", str(e))
+            
+    def insertUser(self,endpoint,userName):
+        try:
+            self.client_socket.sendall((userName+"\n"+endpoint).encode())
+            
+            print("The request to insert a user was sent successfully!")
+        except socket.error as e:
+            print("Failed to send data:", str(e))
 
     def receive_data(self):
         try:
             data = self.client_socket.recv(1024).decode()
-            print("Received data:", data)
+            # print("Received data:", data)
             return data
         except socket.error as e:
             print("Failed to receive data:", str(e))
@@ -34,8 +42,5 @@ class Client:
         print("Connection closed.")
 
 # Usage example:
-client = Client("127.0.0.1", 1234)  # Replace with your server IP and port
-client.connect()
-client.send_data("Hello, server!")
-response = client.receive_data()
+
 # client.close()
