@@ -1,6 +1,9 @@
 import socket
 import threading
 from classes import UserRegistry
+from classes.endpoint.Endpoint import Endpoint
+from classes.user.User import User
+# from classes.endpoint import Endpoint
 
 
 class Server:
@@ -35,9 +38,18 @@ class Server:
                     print(f"Recieved endpoint: {endpoint}")
                 
                     print(f"Recieved userName: {data}")
-                    self.broadcast("salut din partea serverului pt toti", client_socket)
+                    # self.broadcast("salut din partea serverului pt toti", client_socket)
                     
                     # self.sendResponse("salut din partea serverului",client_socket)
+                    if endpoint==Endpoint.INSERTUSER.value:
+                        if self.users.userNameExists(data):
+                            self.sendResponse("error",client_socket)
+                            print("the user already exists")
+                        else:
+                            user=User(data)
+                            self.users.addUser(user)
+                            self.sendResponse("The registration was succesful",client_socket)
+                            print("The registration  succesful")
                 else:
                     with self.lock:
                         self.connections.remove(client_socket)
@@ -50,12 +62,15 @@ class Server:
                 break
 
     def broadcast(self, message, sender_socket):
-        print("broadcasting message")
+        
         with self.lock:
             for client_socket in self.connections:
                 if client_socket != sender_socket:
                     client_socket.send(message.encode())
-                    print("broadcasting message to client socket")
+                else:
+                    client_socket.send("You".encode())
+                
+                
     def sendResponse(self, message, sender_socket):
         with self.lock:
             if sender_socket in self.connections:
