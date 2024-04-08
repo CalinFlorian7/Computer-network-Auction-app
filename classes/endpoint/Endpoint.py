@@ -5,3 +5,4 @@ class Endpoint(Enum):
     INSERTUSER="insertUser"
     INSERTPRODUCT="insertProduct"
     STARTAUCTION="startAuction"
+    GETPRODUCTS="getProducts"
