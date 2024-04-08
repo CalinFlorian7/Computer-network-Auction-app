@@ -1,45 +1,46 @@
 import classes
 User=classes.User
 Product=classes.Product
+Auction=classes.Auction
 UserRegistry=classes.UserRegistry
-product1=Product("product1",100)
-product2=Product("product2",200)
-product3=Product("product3",300)
-product4=Product("product4",400)
-product5=Product("product2",500)
-user=User("Vasile")
-user1=User("Ion")
-user2=User("Maria")
-user3=User("Grigore")
-user.addProduct(product1)
-user.addProduct(product2)
-user.addProduct(product3)
-user1.addProduct(product1)
-user2.addProduct(product5)
-user3.addProduct(product1)
-userRegistry=UserRegistry()
-userRegistry.addUser(user)
-userRegistry.addUser(user1)
-userRegistry.addUser(user2)
-userRegistry.addUser(user3)
-userRegistry.addProductForUser("Vasile",product2)
-variabila=userRegistry.updateProductFinalPrice("Vasile",productName="product2",updatedPrice=201)
-if variabila==None:
-    print("s-a facut update la pret")
-else:
-    print("?????????????????",variabila)
+# product1=Product("product1",100)
+# product2=Product("product2",200)
+# product3=Product("product3",300)
+# product4=Product("product4",400)
+# product5=Product("product2",500)
+# user=User("Vasile")
+# user1=User("Ion")
+# user2=User("Maria")
+# user3=User("Grigore")
+# user.addProduct(product1)
+# user.addProduct(product2)
+# user.addProduct(product3)
+# user1.addProduct(product1)
+# user2.addProduct(product5)
+# user3.addProduct(product1)
+# userRegistry=UserRegistry()
+# userRegistry.addUser(user)
+# userRegistry.addUser(user1)
+# userRegistry.addUser(user2)
+# userRegistry.addUser(user3)
+# userRegistry.addProductForUser("Vasile",product2)
+# variabila=userRegistry.updateProductFinalPrice("Vasile",productName="product2",updatedPrice=201)
+# if variabila==None:
+#     print("s-a facut update la pret")
+# else:
+#     print("?????????????????",variabila)
 
   
-variabila=userRegistry.updateProductFinalPrice("Vasile",productName="product2",updatedPrice=20)
+# variabila=userRegistry.updateProductFinalPrice("Vasile",productName="product2",updatedPrice=20)
 
-print("?????????????????",variabila)
+# print("?????????????????",variabila)
 # user.displayUserProducts()
 # user1.displayUserProducts()
 # user2.displayUserProducts()
 # user3.displayUserProducts()
 
 
-userRegistry.displayUsers()
+# userRegistry.displayUsers()
 
 
 
@@ -68,3 +69,14 @@ userRegistry.displayUsers()
 # for key in dict:
 #     print(key)
 #     print(dict[key])
+
+user1=User("Vasile")
+product=Product("Bike", 100)
+user1.addProduct(product)
+userRegistry=UserRegistry()
+userRegistry.addUser(user1)
+userRegistry.addProductForUser("Vasile",product)
+auction=Auction()
+auction.setProduct(product)
+auction.setAuctioneer("Ion")
+auction.addBid(200)
