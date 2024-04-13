@@ -9,7 +9,7 @@ class Client:
         self.server_ip = server_ip
         self.server_port = server_port
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # self.receive_thread = threading.Thread(target=self.receive_data)
+     
         
         
       
@@ -17,9 +17,9 @@ class Client:
     def connect(self):
         try:
             self.client_socket.connect((self.server_ip, self.server_port))
-            # print("Connected to the server!")
+           
             print("Welcome to the auction!")
-            # self.receive_thread.start()
+        
         except ConnectionRefusedError:
             print("Failed to connect to the server.")
 
@@ -40,7 +40,7 @@ class Client:
                     print("Please enter a valid name!")
                 else:
                     json_data={"endpoint":endpoint,"userName":userName}
-                    # self.client_socket.sendall((endpoint+"\n"+userName).encode())
+             
                     
                     self.client_socket.sendall(json.dumps(json_data).encode())
                     print("Data sent successfully to the server!")
@@ -137,7 +137,7 @@ class Client:
     def receive_data(self):
         try:
             data = self.client_socket.recv(1024).decode()
-            # print("Received data:", data)
+          
             return data
         except socket.error as e:
             print("Failed to receive data:", str(e))
@@ -149,6 +149,3 @@ class Client:
         self.client_socket.close()
         print("Connection closed.")
 
-# Usage example:
-
-# client.close()

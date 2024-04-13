@@ -23,14 +23,5 @@ while True:
         client.startAuction(Endpoint.STARTAUCTION.value)
    
     
-        
-
-
-# while True:
-#     name=input("Enter name: ")
-#     client.insertUser(name,Endpoint.INSERTUSER.value)
-#     response=client.receive_data() 
-#     if response!=None: 
-#         print("Received response: ",response)
 
 client.close()

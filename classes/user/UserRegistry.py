@@ -2,14 +2,8 @@
 
 class UserRegistry:
     __users={}
-    # _instance=None
     def __init__(self):
         self.__users={}
-    # @staticmethod
-    # def getInstance():
-    #     if UserRegistry._instance==None:
-    #         UserRegistry._instance=UserRegistry()
-    #     return UserRegistry._instance
     def getUsers(self):
         return self.__users
     def addUser(self,user):
@@ -55,7 +49,3 @@ class UserRegistry:
         for userName in self.__users:
             userCurent=self.__users[userName]
             userCurent.displayUserProducts()
-            # for product in userCurent.getProducts():
-            #     print(product.__str__())
-            
-        #   print(f"User name{user.get_name()} Starting Price{user.get_startingPrice()} Final price {user.get_finalPrice()}")    

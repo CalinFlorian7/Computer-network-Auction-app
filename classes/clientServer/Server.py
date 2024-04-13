@@ -6,7 +6,7 @@ from classes.product.ProductRegistry import ProductRegistry
 from classes.endpoint.Endpoint import Endpoint
 from classes.user.User import User
 from classes.product.Product import Product
-# from classes.endpoint import Endpoint
+
 
 
 class Server:
@@ -37,22 +37,16 @@ class Server:
 
         while True:
             try:
-                # print("client socket: " + client_socket.__str__())
-                # print("client remote adress",client_socket.getpeername()[1])
+               
                 message = client_socket.recv(1024).decode()
                 message=json.loads(message)
                 print("Received message: ",message)
                 if message!=None:
-                    # endpoint,data=message.split("\n")
+                   
                     
                     endpoint=message["endpoint"]
                    
-                    # print(f"Recieved endpoint: {endpoint}")
-                
-                    # print(f"Recieved userName: {data}")
-                    # self.broadcast("salut din partea serverului pt toti", client_socket)
-                    
-                    # self.sendResponse("salut din partea serverului",client_socket)
+                   
                     if endpoint==Endpoint.INSERTUSER.value:
                         data=message["userName"]
                         if self.users.userNameExists(data):
@@ -63,8 +57,7 @@ class Server:
                             self.users.addUser(user)
                             self.sendResponse("The registration was succesful",client_socket)
                             self.connectedUsers[client_socket.getpeername()[1]]=user.getName()
-                            # for user in self.connectedUsers:
-                            #     print("Connected users: "+self.connectedUsers[user])
+                        
                             print("The registration  succesful")
                     elif endpoint==Endpoint.INSERTPRODUCT.value:
                        product=message["product"]
@@ -82,7 +75,7 @@ class Server:
                             self.sendResponse("error",client_socket)
                             print("No products available!")
                         else:
-                            # products=products.serialize()
+                           
                             products=json.dumps(products)
                             print(products.__str__())
                             self.sendResponse(products,client_socket)
@@ -124,6 +117,3 @@ class Server:
         self.server_socket.close()
         print("Server stopped")
 
-# Usage example
-# server = Server('localhost', 1234)
-# server.start()

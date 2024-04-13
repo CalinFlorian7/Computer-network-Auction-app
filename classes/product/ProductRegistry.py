@@ -2,16 +2,11 @@
 from classes.product.Product import Product
 class ProductRegistry:
     __products = {}
-    # _instance=None
+   
     
     def __init__(self):
         self.__products = {}
-    # @staticmethod
-    # def getInstance():
-    #     if ProductRegistry._instance==None:
-    #         ProductRegistry._instance=ProductRegistry()
-            
-    #     return ProductRegistry._instance
+  
     def getProducts(self):
         return self.__products
     def getSerializedProducts(self):
@@ -50,5 +45,4 @@ class ProductRegistry:
         for productName in self.__products:
             produsCurent=self.__products[productName]
             print(produsCurent.__str__())
-        #   print(f"Product name{product.get_name()} Starting Price{product.get_startingPrice()} Final price {product.get_finalPrice()}")
         
