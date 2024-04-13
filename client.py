@@ -8,7 +8,6 @@ client=Client("127.0.0.1",1234)
 client.connect()
 userName=""
 client.insertUser(Endpoint.INSERTUSER.value)
-print("you name for this auction: "+userName)
 
 while True:
     print("----------------------------------------------------------------------")

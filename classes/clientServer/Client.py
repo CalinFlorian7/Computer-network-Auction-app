@@ -71,8 +71,8 @@ class Client:
                         break
                 while True:
                     startingPrice=input("Please enter the starting price for the product: ")
-                    if startingPrice=="" or self.isNumber(startingPrice)==False:
-                        print("Please enter a valid prouct price!")
+                    if startingPrice=="" or self.isNumber(startingPrice)==False or float(startingPrice)<=0:
+                        print("Please enter a valid product price!")
                     else:
                         break
                 
