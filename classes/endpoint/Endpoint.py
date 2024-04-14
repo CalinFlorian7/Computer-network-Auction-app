@@ -6,3 +6,5 @@ class Endpoint(Enum):
     INSERTPRODUCT="insertProduct"
     STARTAUCTION="startAuction"
     GETPRODUCTS="getProducts"
+    BID="bid"
+    AUCTIONSTATUS="auctionStatus"
