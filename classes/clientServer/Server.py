@@ -8,7 +8,7 @@ from classes.user.User import User
 from classes.product.Product import Product
 from classes.auction.Auction import Auction
 import time
-
+import asyncio
 
 class Server:
     def __init__(self, host, port):
@@ -20,28 +20,43 @@ class Server:
         self.users=UserRegistry()
         self.connectedUsers={}
         self.isAuctionStarted = False
-
-
+        self.auction=Auction("",Product("",0))
 
     def start(self):
-        self.server_socket.bind((self.host, self.port))
-        self.server_socket.listen(5)
-        print(f"Server started on {self.host}:{self.port}")
+        try:
+            self.server_socket.bind((self.host, self.port))
+            self.server_socket.listen(5)
+            print(f"Server started on {self.host}:{self.port}")
 
-        while True:
-            client_socket, client_address = self.server_socket.accept()
-            print(f"New connection from {client_address[0]}:{client_address[1]}")
-            client_thread = threading.Thread(target=self.handle_client, args=(client_socket,))
-            client_thread.start()
+            while True:
+                try:
+                    client_socket, client_address = self.server_socket.accept()
+                    print(f"New connection from {client_address[0]}:{client_address[1]}")
+                   
+                    client_thread = threading.Thread(target= self.handle_client, args=(client_socket,))
+                    client_thread.start()
+                   
+                    print("Handle client task created successfully")
+                except ConnectionResetError as e:
+                    print(str(e))
+        except ConnectionResetError as e:
+            print(str(e))
 
     def handle_client(self, client_socket):
+        try:
+            print("Handle client called")
 
-        with self.lock:
-            self.connections.append(client_socket)
-        self.insertUser(client_socket)
+            with self.lock:
+                self.connections.append(client_socket)
+            print("Befor inseting client")
+            self.insertUser(client_socket)
+            print("After inserting user")
+        except ConnectionResetError as e:
+            print(str(e))
         try:
             while True:
-                self.sendResponse("Please select an option:\n1. Add a product\n2. Start an auction\n3.Get my products",client_socket)
+                # while isAuctionstarted=False
+                self.sendResponse("Please select an option:\n1. Add a product\n2. Start an auction\n3. Get my products\n4. Bid",client_socket)
                 option = self.getResponse(client_socket)
                 if option == "1":
                     self.insertProduct(client_socket)
@@ -51,7 +66,6 @@ class Server:
                     self.getProducts(client_socket)
                 else:
                     self.sendResponse("Please select an option that you have :)) :",client_socket)
-
 
         except ConnectionResetError:
                 with self.lock:
@@ -85,6 +99,9 @@ class Server:
                             auction=Auction(self.connectedUsers[client_socket.getpeername()[1]],productForAuction)
                             if self.isAuctionStarted==False:
                                 self.start_bidding_session(client_socket,auction)
+                                # self.start_bidding(client_socket)   
+                                self.auction=Auction(self.connectedUsers[client_socket.getpeername()[1]],productForAuction)   
+                                self.isAuctionStarted=True                         
                                 break
                             else:
                                 self.sendResponse("You cannot start an auction because an auction is in progress right now",client_socket)
@@ -92,7 +109,51 @@ class Server:
 
         except ConnectionResetError as e:
             print(str(e))
+    
+    def putClientsOnThreads(self):
+        try:
+            client_threads = []
+            for client in self.connections:
+                client_thread = threading.Thread(target= self.handle_client_bid, args=(client,))
+                client_thread.start()
+                client_threads.append(client_thread)
+            for thread in client_threads:
+                thread.join()
+
+        except ConnectionResetError as e:
+            print(str(e))
+    def handle_client_bid(self,client_socket):
+        try:
+            sessionTime=time.time()+10
+            print("sessionTime for client "+self.connectedUsers[client_socket.getpeername()[1]]+" is "+str(sessionTime))
            
+            while time.time()<sessionTime and self.isAuctionStarted==True:
+                currentAuctionTime=sessionTime-time.time()
+                print("The auction will end in "+str(currentAuctionTime)+" seconds for "+self.connectedUsers[client_socket.getpeername()[1]]+"!")
+                self.sendResponse("The auction will end in "+str(currentAuctionTime)+" seconds",client_socket)
+                self.sendResponse("Please enter your bid: ",client_socket)
+                bid = self.getResponse(client_socket)
+                if time.time()<sessionTime:
+                    if bid=="" or self.isNumber(bid)==False or bid is None:
+                        self.sendResponse("Please enter a valid bid!",client_socket)
+                    else:
+                        if self.auction.bid(float(bid),self.connectedUsers[client_socket.getpeername()[1]]) is None:
+                            self.broadcast("New bid: "+self.connectedUsers[client_socket.getpeername()[1]]+" "+bid,client_socket)
+                            self.sendResponse("You have successfully bid with the price of "+bid+" !",client_socket)
+                            print("New bid: "+self.connectedUsers[client_socket.getpeername()[1]]+" "+bid)
+                        else:
+                            self.sendResponse("Your bid is lower than the current bid, please enter a higher bid!",client_socket)
+                            print("Your bid is lower than the current bid, please enter a higher bid!")
+                    print("isAuctionStarted: ",self.isAuctionStarted)
+                else:
+                    print("esti in afara timpului")                    
+                    break
+            self.isAuctionStarted = False
+            print("sesiunea ar trebui sa se opreasca")
+            print("isAuctionStarted: ",self.isAuctionStarted)
+
+        except ConnectionResetError as e:
+            print(str(e))
     def start_bidding_session(self,client_socket,auction):
         try:
             print("session started")
@@ -100,38 +161,25 @@ class Server:
             self.isAuctionStarted=True
             self.sendResponse("Your auction has started!",client_socket)
             self.broadcast("An auction has started!\nOwner: "+auction.getOwner()+auction.getProduct(),client_socket)
-            sessionTime=time.time()+60
+        
             print("The auction will last for 60 seconds")
-            while time.time()<sessionTime:
-                currentAuctionTime=sessionTime-time.time()
-                self.sendResponse("The auction will end in "+str(int(currentAuctionTime))+" seconds",client_socket)
-                self.broadcast("The auction will end in "+str(int(currentAuctionTime))+" seconds",client_socket)
-                print("The auction will end in "+str(int(currentAuctionTime))+" seconds")
-
-                
-                self.sendResponse("Please enter your bid: ",client_socket)
-                
-                bid = self.getResponse(client_socket)
-
-
-                if bid=="" or not self.isNumber(bid):
-                    self.sendResponse("Please enter a valid bid!",client_socket)
-                else:
-                    if auction.bid(float(bid),self.connectedUsers[client_socket.getpeername()[1]]) is None:
-                        self.broadcast("New bid: "+self.connectedUsers[client_socket.getpeername()[1]]+" "+bid,client_socket)
-                        self.sendResponse("You have successfully bid with the price of "+bid+" !",client_socket)
-                        print("New bid: "+self.connectedUsers[client_socket.getpeername()[1]]+" "+bid)
-                    else:
-                        self.sendResponse("Your bid is lower than the current bid, please enter a higher bid!",client_socket)
-                        print("Your bid is lower than the current bid, please enter a higher bid!")
-
-            self.isAuctionStarted = False
+            self.sendResponse("The auction will end in 60 seconds",client_socket)
+            self.broadcast("The auction will end in 60 seconds",client_socket)
+            self.putClientsOnThreads()
+            
+            
             self.broadcast("The auction has ended!",client_socket)
             self.sendResponse("Your auction has ended!",client_socket)
-            
-
-
-
+            self.isAuctionStarted=False
+            bid,bidder=self.auction.getLastBid()
+            print("last bidder: ",bidder)
+            print("last bid: ",bid)
+            if bid is None:
+                self.broadcast("The auction ended without any bids!",client_socket)
+                self.sendResponse("The auction ended without any bids!",client_socket)
+            else:
+                self.broadcast("The auction ended!\nWinner: "+bidder+" with the price of "+str(bid),client_socket)
+                self.sendResponse("The auction ended!\nWinner: "+bidder+" with the price of "+str(bid),client_socket)
         except ConnectionResetError as e:
             print(str(e))    
 
@@ -148,6 +196,7 @@ class Server:
                 self.sendResponse(products,client_socket)
         except ConnectionResetError as e:
             print(str(e))
+
     def insertProduct(self,client_socket):
         try:
             while True:
@@ -170,13 +219,11 @@ class Server:
                     elif response=="error":
                             self.sendResponse("This product already exist, please choose another name!",client_socket) 
             
-
         except ConnectionResetError as e:
             print(str(e))
 
-    
     def insertUser(self,client_socket):
-
+        print("Inserting user called")
         try:
             self.sendResponse("To enter the auction, please enter your username: ",client_socket)
             while True:
@@ -195,7 +242,6 @@ class Server:
         except ConnectionResetError as e:
             print(str(e))
 
-                  
     def isNumber(self,value):
         try:
             val=float(value)
@@ -203,85 +249,6 @@ class Server:
         except ValueError:
             return False  
             
-
-        # while True:
-        #     try:
-               
-        #         message = client_socket.recv(1024).decode()
-        #         message=json.loads(message)
-        #         # print("Received message: ",message)
-        #         if message!=None:
-                   
-                    
-        #             endpoint=message["endpoint"]
-                   
-                   
-        #             if endpoint==Endpoint.INSERTUSER.value:
-                        
-        #                 data=message["userName"]
-        #                 if self.users.userNameExists(data):
-        #                     self.sendResponse("error",client_socket)
-        #                     # print("the user already exists")
-        #                 else:
-        #                     user=User(data)
-        #                     self.users.addUser(user)
-        #                     self.sendResponse("The registration was succesful",client_socket)
-        #                     self.connectedUsers[client_socket.getpeername()[1]]=user.getName()
-        #                     print("The registration was succesful")
-        #             elif endpoint==Endpoint.INSERTPRODUCT.value:
-        #                product=message["product"]
-        #                product=Product.deserialize(product)
-        #                response= self.users.addProductForUser(self.connectedUsers[client_socket.getpeername()[1]],product)
-        #                if response==None:
-        #                     self.sendResponse("The product was added",client_socket)
-        #                     # print("The product was added")
-        #                     # self.users.displayUsers()
-        #                elif response=="error":
-        #                        self.sendResponse("error",client_socket) 
-        #             elif endpoint==Endpoint.GETPRODUCTS.value:
-        #                 products=self.users.getProductsForUser(self.connectedUsers[client_socket.getpeername()[1]])
-        #                 if(products.__len__()==0 or products is None):
-        #                     self.sendResponse("error",client_socket)
-        #                     print("No products available!")
-        #                 else:
-                            
-        #                     products=json.dumps(products)
-        #                     print(products.__str__())
-        #                     self.sendResponse(products,client_socket)
-        #             elif endpoint==Endpoint.STARTAUCTION.value:
-        #                 product=message["product"]
-        #                 product=Product.deserialize(product)
-        #                 product.displayProductNameAndStartingPrice()
-        #                 if self.isAuctionStarted == False:
-        #                     self.isAuctionStarted=True
-        #                     self.broadcast("started",client_socket)
-        #                     self.sendResponse("started",client_socket)
-        #                     self.start_bidding_session(client_socket,self.connectedUsers[client_socket.getpeername()[1]],product)
-        #                 else:
-        #                     self.sendResponse("You cannot start an auction because an auction is in progress right now",client_socket)
-                        
-
-                        
-                        
-
-
-
-
-        #         else:
-        #             with self.lock:
-        #                 self.connections.remove(client_socket)
-        #             client_socket.close()
-        #             break
-        #     except ConnectionResetError:
-        #         with self.lock:
-        #             self.connections.remove(client_socket)
-        #         client_socket.close()
-        #         break
-            
-
-        
-       
-       
     def getResponse(self,client_socket):
         response = client_socket.recv(1024).decode()
         return response                
@@ -291,15 +258,16 @@ class Server:
             for client_socket in self.connections:
                 if client_socket != sender_socket:
                     client_socket.send(message.encode())
-                # else:
-                #     client_socket.send(("To yourself").encode())
-                
 
     def sendResponse(self, message, sender_socket):
-        with self.lock:
-            if sender_socket in self.connections:
+        try:
+            with self.lock:
+                if sender_socket in self.connections:
                     sender_socket.send(message.encode())
-             
+                    
+        except ConnectionResetError as e:
+            print(str(e))     
+    
     def stop(self):
         with self.lock:
             for client_socket in self.connections:

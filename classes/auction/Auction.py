@@ -10,10 +10,15 @@ class Auction:
         
         def getOwner(self):
             return self.__owner
+        def setOwner(self,owner):
+            self.__owner=owner
+        def setProduct(self,product):
+            self.__product=product
         def getLastBid(self):
             if len(self.__bids)==0:
                 return None
-            return self.__bids[max(self.__bids)]
+            return self.__bids.popitem()
+            # return self.__bids[max(self.__bids)]
         def getProduct(self):
             return f"Product {self.__product.getName()} with starting price {self.__product.getStartingPrice()} and current price {self.__product.getFinalPrice()}"
         def bid(self,bidPrice,bidderName):
